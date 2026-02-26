@@ -9,7 +9,10 @@
   },
   "scripts": {
     "kickbase": "tsx bin/kickbase.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
   },
   "dependencies": {
     "chalk": "^5.3.0",
