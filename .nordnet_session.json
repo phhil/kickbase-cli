@@ -1,0 +1,38 @@
+{
+  "cookies": {
+    "signicat_session": "eyJhbGciOiJub25lIn0.e30.",
+    "signicat_session-fallback": "eyJhbGciOiJub25lIn0.e30.",
+    "60e7724bc56a9177c123a83334159fe4e5d50ef299ab1215e08b481f93d2050c": "1",
+    "_dcid": "dcid.1.1772139255175.901161498",
+    "consent_cookie": "analytics,functional,marketing,necessary",
+    "lang": "da",
+    "transid": "7klkw1wpss4cpbdzigwi0yll4cqc47krwcxim7vxi7i0ohgyu",
+    "transid-fallback": "7klkw1wpss4cpbdzigwi0yll4cqc47krwcxim7vxi7i0ohgyu",
+    "JSESSIONID": "0BBDEAC40AE0A5EF4A78974334372FC2.sig-prod-auth15",
+    "JSESSIONID-fallback": "0BBDEAC40AE0A5EF4A78974334372FC2.sig-prod-auth15",
+    "language": "en",
+    ".AspNetCore.Session": "CfDJ8NMT6eEh1btDo6STYI%2BonmTDlsy4kngmnopH0Ia%2BD0aefhFW0FFn6isXPUb1fB3RZgOHv8oqf6K4EGhVGLdr3erk9JiorQxojmYXxpR8ZYFay7ZSjfSIwv%2BadYef8cpV75sGeeGV06x2uZQKpw9QDU%2BXSMUvH0Y8GcxCtrHV2iEi",
+    ".AspNetCore.Session-fallback": "CfDJ8NMT6eEh1btDo6STYI%2BonmTDlsy4kngmnopH0Ia%2BD0aefhFW0FFn6isXPUb1fB3RZgOHv8oqf6K4EGhVGLdr3erk9JiorQxojmYXxpR8ZYFay7ZSjfSIwv%2BadYef8cpV75sGeeGV06x2uZQKpw9QDU%2BXSMUvH0Y8GcxCtrHV2iEi",
+    "idsrv": "CfDJ8NMT6eEh1btDo6STYI-onmQDr_-jfcC7HqodGY0al9qmfLlvk_Dan0G_tARouoLrIiaknWYk-CXkPYa-fgM-8W5sRGknuUq1k1D1eq8-7mJ5ARleaLL5sB3NFMXGcxh27nFYID__3YgpWfV3KoyfqWSkKkU_WiuieINttky7_2EiqHfryORmdXklufHDZs7yJjKRlVb_gyKa8gyjpmRVqss5brFC3m9sVmLr-j_o0z_w6jqJAGQ8ObCZUIDx08Pyr4CquJ3ZO7LBshTua8s2KQqm4YVwb2nMYlO6ZQPtDOTEMlo8dPwTGGIjDaOUhuBTMjq0i2tLddDGUZuLNyw7DAJqdIUqoICfWQcRk0xpwo51eRbmn-BJC01Qe4ISMQ43H44fJwYDfJ0aVUdL1UPRnZKauM3ERjqCYbGihsys4ZXf7N4iPlAQjqZYLNeuie4tDx6fcS7iYZXI_IkxvUNbjU_NfZu2PliTM-njul7LozpsVmbddj_0eZ-5uSH9kSmOq7Rw_E4_3dKFgydoTGZPzrEZ4YH02YIT62UkwveaWMSQM1z5RYBcc1NyMimEQEXmaLIoAO_hvS06n5OtSj1xA4yr1vmPwrXN6pS2aor_cHw6csHpcVgd1SG-Dr4r1FF9YKs5BQQyb4pywSQumRjFw07oqM3nPvn-hLNcqLBuozidKACnKJ_sqhoVP3xjRixUlg",
+    "idsrv-fallback": "CfDJ8NMT6eEh1btDo6STYI-onmQDr_-jfcC7HqodGY0al9qmfLlvk_Dan0G_tARouoLrIiaknWYk-CXkPYa-fgM-8W5sRGknuUq1k1D1eq8-7mJ5ARleaLL5sB3NFMXGcxh27nFYID__3YgpWfV3KoyfqWSkKkU_WiuieINttky7_2EiqHfryORmdXklufHDZs7yJjKRlVb_gyKa8gyjpmRVqss5brFC3m9sVmLr-j_o0z_w6jqJAGQ8ObCZUIDx08Pyr4CquJ3ZO7LBshTua8s2KQqm4YVwb2nMYlO6ZQPtDOTEMlo8dPwTGGIjDaOUhuBTMjq0i2tLddDGUZuLNyw7DAJqdIUqoICfWQcRk0xpwo51eRbmn-BJC01Qe4ISMQ43H44fJwYDfJ0aVUdL1UPRnZKauM3ERjqCYbGihsys4ZXf7N4iPlAQjqZYLNeuie4tDx6fcS7iYZXI_IkxvUNbjU_NfZu2PliTM-njul7LozpsVmbddj_0eZ-5uSH9kSmOq7Rw_E4_3dKFgydoTGZPzrEZ4YH02YIT62UkwveaWMSQM1z5RYBcc1NyMimEQEXmaLIoAO_hvS06n5OtSj1xA4yr1vmPwrXN6pS2aor_cHw6csHpcVgd1SG-Dr4r1FF9YKs5BQQyb4pywSQumRjFw07oqM3nPvn-hLNcqLBuozidKACnKJ_sqhoVP3xjRixUlg",
+    "idsrv.external": "CfDJ8NMT6eEh1btDo6STYI-onmSFx3_MS6V0mjRaSd6e1SRbc530byjjjV2OXZSHLHyWBn7PZcQZEcT7hNJ1IZ9bGItME0Lh-ZPQAcU8t2iiB3U0e8jAwC_CSHdZbjQ9wWTUho21THZ8Yp_cRB8-ImM40DN8YHHxPDd03wStBUxGptY58y48FvFy6C12BRb9CDUEnjvye8T4biIPrqnymkM23HBsjrVHjRCU18kRczv23W-DND_dNuzzqhiXr4i2pe0Ys3ubrDVYe92TzPr9l7X6pIZcZznuoHmkkSqKZVDIwsn126Gx_eNcdQpGbjV7z9o3WabedUDSyaLHvgopxyb8Vco",
+    "idsrv.session": "A0BBE61FC2B5C9A03CF6DD6C2BAA1B32",
+    "idsrv.session-fallback": "A0BBE61FC2B5C9A03CF6DD6C2BAA1B32",
+    "SESSION": "MWU4Y2M4ZWQtNmQ0ZC00Y2VlLTlhYTktZGQwYjVlOWM0NDcw",
+    "NNX_SESSION_ID": "e5e1aa6b-e3aa-4eee-8da0-cceb8e140208",
+    "_csrf": "7id_U7ceXZzxV8OACs0FtW9_"
+  },
+  "headers": {
+    "client-id": "NEXT",
+    "ntag": "c6492009-e0eb-41a6-88a1-7ce4c4a4f4c6",
+    "accept": "application/json",
+    "content-type": "application/json",
+    "origin": "https://www.nordnet.dk",
+    "referer": "https://www.nordnet.dk/",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "dnt": "1"
+  },
+  "saved_at": "2026-02-26T21:54:42.468215"
+}
