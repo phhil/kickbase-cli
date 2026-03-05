@@ -13,9 +13,11 @@ import { registerChatCommands } from '../src/commands/chat.js';
 import { registerBaseCommands } from '../src/commands/base.js';
 import { registerLigaInsiderCommands } from '../src/commands/ligainsider.js';
 import { registerSmartCommands } from '../src/commands/smart.js';
+import { registerAgentCommands } from '../src/commands/agent.js';
 import { disableCache } from '../src/lib/cache.js';
-import { setRuntimeOptions, isJsonMode } from '../src/lib/runtime.js';
+import { beginCommandContext, endCommandContext, getRuntimeOptions, setRuntimeOptions, isAgentMode, isJsonMode } from '../src/lib/runtime.js';
 import { syncEnvelopeRuntimeFlags } from '../src/lib/envelope.js';
+import { CliPolicyError, ERROR_CODES } from '../src/core/error-codes.js';
 
 const program = new Command();
 const client = new KickbaseClient();
@@ -82,18 +84,43 @@ program
   .description('CLI wrapper for the Kickbase fantasy football API')
   .version('1.0.0')
   .option('--json', 'Force JSON output')
+  .option('--agent', 'Enable strict agent/tool JSON output (v2 envelope)')
+  .option('--schema-version <v>', 'Schema version for agent output', '2.0')
+  .option('--fail-on-warning', 'Treat warnings as errors in agent mode')
+  .option('--idempotency-key <key>', 'Idempotency key for write operations')
   .option('--verbose', 'Verbose output')
   .option('--no-cache', 'Bypass cache')
   .option('--base-url <url>', 'Override API base URL')
-  .hook('preAction', () => {
+  .hook('preAction', (_thisCommand, actionCommand) => {
     const opts = program.opts();
+    const agent = Boolean(opts.agent);
+    const schemaVersion = String(opts.schemaVersion ?? '2.0');
+    if (agent && schemaVersion !== '2.0') {
+      throw new CliPolicyError(ERROR_CODES.SCHEMA_VERSION_UNSUPPORTED, `Unsupported schema version: ${schemaVersion}`);
+    }
     setRuntimeOptions({
-      json: Boolean(opts.json) || !process.stdout.isTTY,
+      json: Boolean(opts.json) || agent || !process.stdout.isTTY,
       verbose: Boolean(opts.verbose),
+      agent,
+      schemaVersion,
+      failOnWarning: Boolean(opts.failOnWarning),
+      idempotencyKey: opts.idempotencyKey ? String(opts.idempotencyKey) : undefined,
     });
     syncEnvelopeRuntimeFlags();
+    const names: string[] = [];
+    let cursor: any = actionCommand;
+    while (cursor && typeof cursor.name === 'function') {
+      const n = String(cursor.name() ?? '').trim();
+      if (n && n !== 'kb') names.push(n);
+      cursor = cursor.parent;
+    }
+    const commandPath = names.reverse().join(' ');
+    beginCommandContext(commandPath ? `kb ${commandPath}` : 'kb');
     if (opts.baseUrl) client.setBaseUrl(String(opts.baseUrl));
     if (opts.noCache) disableCache();
+  })
+  .hook('postAction', () => {
+    endCommandContext();
   });
 
 program.showSuggestionAfterError(true);
@@ -115,6 +142,7 @@ registerChatCommands(program, client);
 registerBaseCommands(program, client);
 registerLigaInsiderCommands(program, client);
 registerSmartCommands(program, client);
+registerAgentCommands(program);
 
 program
   .command('search <terms...>')
@@ -146,7 +174,37 @@ program
       .sort((a, b) => b.score - a.score || a.command.localeCompare(b.command))
       .slice(0, limit);
 
-    if (isJsonMode()) {
+  if (isAgentMode()) {
+    const commands = Object.values(groups).flat();
+    const payload = {
+      ok: true,
+      tool: 'kb',
+      schema_version: getRuntimeOptions().schemaVersion,
+      result: {
+        description: program.description(),
+        version: program.version(),
+        tools: commands.map((c) => ({
+          tool: c.command.replace(/^kb\s+/, '').replace(/\s+/g, '.'),
+          command: c.command,
+          description: c.description,
+          args_schema_ref: `tool://${c.command.replace(/^kb\s+/, '').replace(/\s+/g, '.')}/args`,
+        })),
+      },
+      error: null,
+      warnings: [],
+      next_actions: [
+        { tool: 'tools.list', args_schema_ref: 'tool://tools.list/args', reason: 'discover available tools' },
+        { tool: 'tools.describe', args_schema_ref: 'tool://tools.describe/args', reason: 'inspect one tool schema' },
+      ],
+      meta: {
+        timestamp: new Date().toISOString(),
+        duration_ms: 0,
+        source: 'kickbase-cli',
+        cached: false,
+      },
+    };
+    console.log(JSON.stringify(payload));
+  } else if (isJsonMode()) {
       console.log(JSON.stringify({
         ok: true,
         command: 'kb search',
@@ -267,7 +325,7 @@ let firstOperand: string | undefined;
 
 for (let i = 0; i < argv.length; i++) {
   const token = argv[i];
-  if (token === '--base-url') {
+  if (token === '--base-url' || token === '--schema-version' || token === '--idempotency-key') {
     i++;
     continue;
   }
@@ -283,6 +341,29 @@ if (firstOperand && !topLevelCommands.has(firstOperand)) {
 }
 
 program.parseAsync(process.argv).catch((err) => {
-  console.error(err.message);
+  if (isAgentMode()) {
+    const envelope = {
+      ok: false,
+      tool: getRuntimeOptions().activeTool ?? 'kb',
+      schema_version: getRuntimeOptions().schemaVersion,
+      result: null,
+      error: {
+        code: err?.code ?? ERROR_CODES.ACTION_FAILED,
+        message: err?.message ?? 'Unknown error',
+        retryable: false,
+      },
+      warnings: [],
+      next_actions: [],
+      meta: {
+        timestamp: new Date().toISOString(),
+        duration_ms: 0,
+        source: 'kickbase-cli',
+        cached: false,
+      },
+    };
+    console.log(JSON.stringify(envelope));
+  } else {
+    console.error(err.message);
+  }
   process.exit(1);
 });

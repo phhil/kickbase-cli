@@ -3,6 +3,8 @@ import { join } from 'path';
 import { homedir } from 'os';
 import { getCached, setCache } from './cache.js';
 import { isVerboseMode } from './runtime.js';
+import { validateWriteAllowed } from '../core/policy-engine.js';
+import { getIdempotencyKey } from '../core/idempotency.js';
 
 const TOKEN_DIR = join(homedir(), '.config', 'kickbase-cli');
 const TOKEN_FILE = join(TOKEN_DIR, 'token.json');
@@ -87,6 +89,10 @@ export class KickbaseClient {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+    const idempotencyKey = getIdempotencyKey();
+    if (idempotencyKey && method.toUpperCase() !== 'GET') {
+      headers['Idempotency-Key'] = idempotencyKey;
+    }
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
@@ -127,6 +133,7 @@ export class KickbaseClient {
 
   // Auth-aware request with automatic 401 refresh/re-login
   private async request<T>(method: string, path: string, body?: unknown, skipAuth = false): Promise<T> {
+    validateWriteAllowed(method, path);
     if (!skipAuth) await this.ensureAuth();
 
     try {

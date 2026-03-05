@@ -1,11 +1,12 @@
 import { writeFileSync } from 'fs';
 import chalk from 'chalk';
-import { isJsonMode } from './runtime.js';
+import { isAgentMode, isJsonMode, getRuntimeOptions } from './runtime.js';
+import { deterministicJSONStringify, makeErrorEnvelope, makeSuccessEnvelope, toToolNextActions } from '../core/tool-contract.js';
 
-export let isAgent = isJsonMode();
+export let isAgent = isAgentMode();
 
 export function syncEnvelopeRuntimeFlags(): void {
-  isAgent = isJsonMode();
+  isAgent = isAgentMode();
 }
 
 interface NextAction {
@@ -33,7 +34,23 @@ export function respond(
   result: Record<string, any>,
   nextActions: NextAction[] = []
 ): void {
-  if (isAgent) {
+  const warnings: string[] = [];
+  if (isAgentMode()) {
+    const envelope = makeSuccessEnvelope(command, result, toToolNextActions(nextActions), warnings);
+    if (getRuntimeOptions().failOnWarning && warnings.length > 0) {
+      const errorEnvelope = makeErrorEnvelope(
+        command,
+        'WARNINGS_AS_ERRORS',
+        'Warnings present and --fail-on-warning enabled',
+        false,
+        toToolNextActions(nextActions),
+        { warnings }
+      );
+      console.log(deterministicJSONStringify(errorEnvelope));
+      process.exit(1);
+    }
+    console.log(deterministicJSONStringify(envelope));
+  } else if (isJsonMode()) {
     console.log(JSON.stringify({ ok: true, command, result, next_actions: nextActions }));
   } else {
     // Human mode — caller handles formatting before calling respond,
@@ -50,13 +67,38 @@ export function respondError(
   fix: string,
   nextActions: NextAction[] = []
 ): never {
-  if (isAgent) {
-    console.log(JSON.stringify({ ok: false, command, error: { message, code }, fix, next_actions: nextActions }));
+  const effectiveCode = inferPolicyCode(message, code);
+  if (isAgentMode()) {
+    const envelope = makeErrorEnvelope(
+      command,
+      effectiveCode,
+      message,
+      false,
+      toToolNextActions(nextActions),
+      { fix }
+    );
+    console.log(deterministicJSONStringify(envelope));
+  } else if (isJsonMode()) {
+    console.log(JSON.stringify({ ok: false, command, error: { message, code: effectiveCode }, fix, next_actions: nextActions }));
   } else {
     console.error(chalk.red(`Error: ${message}`));
     console.error(chalk.yellow(`Fix: ${fix}`));
   }
   process.exit(1);
+}
+
+function inferPolicyCode(message: string, fallback: string): string {
+  const rules: Array<[RegExp, string]> = [
+    [/No active approval session/i, 'APPROVAL_REQUIRED'],
+    [/idempotency key is required/i, 'IDEMPOTENCY_KEY_REQUIRED'],
+    [/not allowed by policy/i, 'POLICY_DENIED'],
+    [/write path not in write_allowlist/i, 'SCOPE_VIOLATION'],
+    [/approval scope does not include/i, 'POLICY_DENIED'],
+  ];
+  for (const [re, code] of rules) {
+    if (re.test(message)) return code;
+  }
+  return fallback;
 }
 
 export function truncateResult(items: any[], maxItems = 50) {

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kb run args",
+  "type": "object",
+  "required": ["argv", "options"],
+  "properties": {
+    "argv": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["string", "number", "boolean", "null"]
+      }
+    }
+  },
+  "additionalProperties": false
+}
